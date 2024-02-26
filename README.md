@@ -1,1 +1,1 @@
-# hazelcast
+# Mykola Yakovkin
