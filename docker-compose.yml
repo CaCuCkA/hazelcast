@@ -1,0 +1,54 @@
+version: "3.8"
+
+x-common-settings: &common-settings
+  image: hazelcast/hazelcast:latest
+  volumes:
+    - ./hazelcast.yml:/opt/hazelcast/hazelcast.yml
+  networks:
+    - hazelcast-network
+
+services:
+  hazelcast-node-1:
+    <<: *common-settings
+    container_name: hazelcast-node1
+    ports:
+      - "5701:5701"
+    environment:
+      - HZ_CLUSTERNAME=hazelcast-homework
+      - HZ_NETWORK_PUBLICADDRESS=172.17.0.1:5701
+      - HAZELCAST_CONFIG=/opt/hazelcast/hazelcast.yml
+
+  hazelcast-node-2:
+    <<: *common-settings
+    container_name: hazelcast-node2
+    ports:
+      - "5702:5701"
+    environment:
+      - HZ_CLUSTERNAME=hazelcast-homework
+      - HZ_NETWORK_PUBLICADDRESS=172.17.0.1:5702
+      - HAZELCAST_CONFIG=/opt/hazelcast/hazelcast.yml
+
+  hazelcast-node-3:
+    <<: *common-settings
+    container_name: hazelcast-node3
+    ports:
+      - "5703:5701"
+    environment:
+      - HZ_CLUSTERNAME=hazelcast-homework
+      - HZ_NETWORK_PUBLICADDRESS=172.17.0.1:5703
+      - HAZELCAST_CONFIG=/opt/hazelcast/hazelcast.yml
+
+  management-center:
+    image: hazelcast/management-center:latest
+    container_name: hazelcast-management-center
+    ports:
+      - "8081:8080"
+    networks:
+      - hazelcast-network
+    environment:
+      - MC_DEFAULT_CLUSTER=hazelcast-homework
+      - MC_DEFAULT_CLUSTER_MEMBERS=hazelcast-node1:5701,hazelcast-node2:5702,hazelcast-node3:5703
+
+networks:
+  hazelcast-network:
+    name: hazelcast-network
